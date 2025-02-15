@@ -12,8 +12,11 @@ def measure_time(func, *args, **kwargs):
     return elapsed_time, result
 
 # Load image and convert to Grayscale
-def load_image(img_path):
+# resize : (width, height)
+def load_image(img_path, resize=None):
     img = Image.open(img_path).convert("L")  # Grayscale
+    if resize:
+        img = img.resize(resize, Image.BILINEAR)
     img_tensor = TF.to_tensor(img)  # [C, H, W]
     return img_tensor.squeeze(0)  # [H, W]
 
