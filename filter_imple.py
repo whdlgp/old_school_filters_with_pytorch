@@ -110,7 +110,6 @@ class GaussianBlur:
 # Laplacian of Gaussian (LoG) Filter implementation
 class LaplacianOfGaussian:
     def __init__(self):
-        # LoG 필터 (5x5 커널)
         self.log_kernel = torch.tensor([
             [0,  0, -1,  0,  0],
             [0, -1, -2, -1,  0],
