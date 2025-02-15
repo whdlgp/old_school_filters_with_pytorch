@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms.functional as TF
+import matplotlib.pyplot as plt
 from pathlib import Path
 from util import load_image, show_comparison
 from filter_imple import Sobel
@@ -41,6 +42,8 @@ class SobelTrainer:
         self.loss_fn = nn.MSELoss()
         # Input images
         self.image_dir = Path("test_images")
+        # Loss history
+        self.loss_history = torch.zeros(self.num_epochs, device="cpu")
 
     def load_dataset(self):
         """
@@ -69,9 +72,12 @@ class SobelTrainer:
             loss = self.loss_fn(output, target_tensor)
             loss.backward()
             self.optimizer.step()
+            
+            # log loss
+            self.loss_history[epoch] = loss.item()
 
-            if epoch % 10 == 0:
-                print(f"Epoch [{epoch}/{self.num_epochs}], Loss: {loss.item():.6f}")
+            if (epoch+1) % 10 == 0:
+                print(f"Epoch [{(epoch+1)}/{self.num_epochs}], Loss: {loss.item():.6f}")
 
     def evaluate(self):
         """
@@ -93,7 +99,22 @@ class SobelTrainer:
         learned_kernel = self.model.conv.weight.data.squeeze().cpu().numpy()
         print("Learned Kernel:\n", learned_kernel)
 
+    def plot_loss(self):
+        """
+        Plots the loss curve and saves it as an image file.
+        """
+        plt.figure(figsize=(8, 6))
+        plt.plot(self.loss_history.cpu().numpy(), label="Training Loss", color='blue')
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title("Loss Curve")
+        plt.legend()
+        plt.grid(True)
+        plt.savefig("loss_curve.png")
+        plt.show()
+
 if __name__ == "__main__":
     trainer = SobelTrainer(learning_rate=0.001, num_epochs=5000)
     trainer.train()
+    trainer.plot_loss()
     trainer.evaluate()
