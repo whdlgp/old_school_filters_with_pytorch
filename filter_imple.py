@@ -88,9 +88,11 @@ class Laplacian:
     # Laplacian detection
     def filter(self, img, method="manual"):
         if method == "manual":
-            return apply_filter_manual(img, self.laplacian)
+            result = apply_filter_manual(img, self.laplacian)
         elif method == "conv2d":
-            return apply_filter_conv2d(img, self.laplacian)
+            result = apply_filter_conv2d(img, self.laplacian)
+        
+        return (result - result.min()) / (result.max() - result.min())
         
 # Gaussian Blur Filter implementation
 class GaussianBlur:
@@ -106,7 +108,7 @@ class GaussianBlur:
             return apply_filter_manual(img, self.gaussian_blur)
         elif method == "conv2d":
             return apply_filter_conv2d(img, self.gaussian_blur)
-
+    
 # Laplacian of Gaussian (LoG) Filter implementation
 class LaplacianOfGaussian:
     def __init__(self):
@@ -121,6 +123,8 @@ class LaplacianOfGaussian:
     # Apply LoG filter
     def filter(self, img, method="manual"):
         if method == "manual":
-            return apply_filter_manual(img, self.log_kernel)
+            result = apply_filter_manual(img, self.log_kernel)
         elif method == "conv2d":
-            return apply_filter_conv2d(img, self.log_kernel)
+            result = apply_filter_conv2d(img, self.log_kernel)
+        
+        return (result - result.min()) / (result.max() - result.min())

@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision.transforms.functional as TF
 import matplotlib.pyplot as plt
 from pathlib import Path
-from util import load_image, show_comparison
+from util import load_image, save_comparison_grid
 from filter_imple import Sobel
 
 class SimpleConv(nn.Module):
@@ -79,23 +78,29 @@ class SobelTrainer:
             if (epoch+1) % 10 == 0:
                 print(f"Epoch [{(epoch+1)}/{self.num_epochs}], Loss: {loss.item():.6f}")
 
-    def evaluate(self):
+    def evaluate(self, output_filename="learned_sobel_comparison"):
         """
-        Evaluates the trained model and compares its output to the Sobel filter.
+        Evaluates the trained model and saves its output compared to the Sobel filter.
         """
         input_tensor, target_tensor = self.load_dataset()
 
         with torch.no_grad():
             output_tensor = self.model(input_tensor)
-        
+
         target_tensor = target_tensor.cpu()
         output_tensor = output_tensor.cpu()
 
+        results = []
         for i in range(len(input_tensor)):
-            show_comparison(target_tensor[i].squeeze(0), output_tensor[i].squeeze(0), 
-                            title1="Sobel Target", title2="Learned Conv2D")
+            results.append((
+                target_tensor[i].squeeze(0),
+                output_tensor[i].squeeze(0),
+                "Sobel Target",
+                "Learned Conv2D"
+            ))
 
-        # Print the learned kernel
+        save_comparison_grid(results, output_filename)
+
         learned_kernel = self.model.conv.weight.data.squeeze().cpu().numpy()
         print("Learned Kernel:\n", learned_kernel)
 
