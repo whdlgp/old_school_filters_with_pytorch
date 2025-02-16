@@ -8,7 +8,7 @@ from filter_imple import Sobel
 
 class SimpleConv(nn.Module):
     """
-    A simple convolutional model with a single 3x3 filter.
+    A simple convolutional model with two 3x3 filter.
     The goal is to learn a filter that mimics the Sobel operator.
     """
     def __init__(self):
@@ -20,17 +20,31 @@ class SimpleConv(nn.Module):
         Gx, Gy = G[:, 0, :, :], G[:, 1, :, :]  # Separate the two filters
         
         return torch.sqrt(torch.clamp(Gx**2 + Gy**2, min=1e-6)).unsqueeze(1)
+    
+class SimpleConvSqueezed(nn.Module):
+    """
+    A simple convolutional model with a single 3x3 filter.
+    The goal is to learn a filter that mimics the Sobel operator.
+    """
+    def __init__(self):
+        super(SimpleConvSqueezed, self).__init__()
+        self.conv = nn.Conv2d(1, 1, kernel_size=3, stride=1, padding=1, bias=False)
+
+    def forward(self, x):
+        G = self.conv(x) # Output shape: [batch, 1, H, W]
+        
+        return torch.sqrt(torch.clamp(G**2, min=1e-6))
 
 class SobelTrainer:
     """
     Trainer for learning a convolutional filter to approximate the Sobel filter.
     Uses images from the 'test_images' directory.
     """
-    def __init__(self, learning_rate, num_epochs):
+    def __init__(self, learning_rate, num_epochs, model):
         # Device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         # Model
-        self.model = SimpleConv().to(self.device)
+        self.model = model.to(self.device)
         # Target
         self.sobel = Sobel()
         # Training params
@@ -119,7 +133,7 @@ class SobelTrainer:
         plt.show()
 
 if __name__ == "__main__":
-    trainer = SobelTrainer(learning_rate=0.001, num_epochs=5000)
+    trainer = SobelTrainer(learning_rate=0.001, num_epochs=5000, model=SimpleConv()) # or SimpleConvSqueezed for 1 kernel version 
     trainer.train()
     trainer.plot_loss()
     trainer.evaluate()

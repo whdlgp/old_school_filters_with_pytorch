@@ -94,4 +94,23 @@ Learned Kernel:
 
 </details>
 
+### Make small verson of Sobel with 'Learning'
 
+![loss_curve](result_sample/loss_curve_1kernel.png)
+
+#### Trained Sobel Filter
+```
+Learned Kernel:
+ [[ 0.00956989  1.5808742   2.1380332 ]
+ [-1.8604777   0.07029653  1.7490406 ]
+ [-2.123877   -1.6290201   0.06313752]]
+```
+* It looks like one of filter of Sobel but rotated.
+* However, the results calculated with this kernel are quite similar to Sobel's.
+
+<details>
+<summary> Origial ⚔️ Trained  </summary>
+
+![learned_sobel_comparison_1kernel.jpg](result_sample/learned_sobel_comparison_1kernel.jpg)
+
+</details>
